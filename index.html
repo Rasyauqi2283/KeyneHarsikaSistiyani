@@ -1822,9 +1822,9 @@
       padding: 0.65rem 0.85rem;
       cursor: pointer;
       display: grid;
-      grid-template-columns: 1.1rem 1fr;
+      grid-template-columns: 1.1rem 1fr auto;
       gap: 0.55rem;
-      align-items: baseline;
+      align-items: center;
       font-family: var(--font-body);
       transition: background 0.2s ease;
     }
@@ -1845,6 +1845,19 @@
 
     .player-track.is-active .player-track-num {
       color: var(--gold-soft);
+    }
+
+    .player-track-text {
+      appearance: none;
+      -webkit-appearance: none;
+      border: none;
+      background: transparent;
+      color: inherit;
+      text-align: left;
+      cursor: pointer;
+      padding: 0;
+      min-width: 0;
+      font: inherit;
     }
 
     .player-track-text strong {
@@ -1868,13 +1881,96 @@
       margin-top: 0.12rem;
     }
 
+    .player-delete {
+      appearance: none;
+      -webkit-appearance: none;
+      border: none;
+      background: transparent;
+      color: rgba(243, 232, 250, 0.35);
+      width: 1.55rem;
+      height: 1.55rem;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: color 0.2s ease, background 0.2s ease;
+    }
+
+    .player-delete:hover,
+    .player-delete:focus-visible {
+      color: #f0a0c0;
+      background: rgba(240, 160, 192, 0.12);
+    }
+
+    .player-delete svg {
+      width: 0.75rem;
+      height: 0.75rem;
+      fill: currentColor;
+    }
+
+    .player-extra {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      padding: 0.45rem 0.75rem 0.55rem;
+      border-top: 1px solid rgba(212, 180, 232, 0.1);
+    }
+
+    .player.is-open .player-extra {
+      display: flex;
+    }
+
+    .player-extra-group {
+      display: flex;
+      align-items: center;
+      gap: 0.2rem;
+    }
+
+    .player-icon-btn.is-on {
+      color: var(--mist);
+      background: rgba(168, 85, 200, 0.22);
+    }
+
+    .player-speed {
+      appearance: none;
+      -webkit-appearance: none;
+      border: 1px solid rgba(201, 168, 108, 0.28);
+      background: rgba(243, 232, 250, 0.04);
+      color: var(--gold-soft);
+      min-width: 2.6rem;
+      height: 1.85rem;
+      padding: 0 0.45rem;
+      border-radius: 999px;
+      font-family: var(--font-body);
+      font-size: 0.68rem;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+    }
+
+    .player-speed:hover,
+    .player-speed:focus-visible {
+      border-color: rgba(201, 168, 108, 0.6);
+      color: var(--mist);
+      background: rgba(168, 85, 200, 0.12);
+    }
+
+    .player-extra-hint {
+      font-size: 0.58rem;
+      letter-spacing: 0.08em;
+      color: rgba(243, 232, 250, 0.35);
+      text-transform: lowercase;
+    }
+
     .player-add {
       display: none;
       align-items: center;
       justify-content: center;
       gap: 0.45rem;
       width: calc(100% - 1.4rem);
-      margin: 0.45rem 0.7rem 0.7rem;
+      margin: 0.45rem 0.7rem 0.35rem;
       min-height: 2.45rem;
       border: 1px dashed rgba(201, 168, 108, 0.34);
       background: rgba(243, 232, 250, 0.035);
@@ -1923,6 +2019,10 @@
 
     .player.is-open .player-note {
       display: block;
+    }
+
+    .player.is-open .player-list {
+      max-height: 12rem;
     }
 
     @media (max-width: 640px) {
@@ -2005,13 +2105,22 @@
         </div>
       </div>
       <div class="player-progress" aria-hidden="true"><span id="player-progress"></span></div>
+      <div class="player-extra">
+        <div class="player-extra-group">
+          <button type="button" class="player-icon-btn" id="player-repeat" aria-label="Ulangi: mati" title="Ulangi">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg>
+          </button>
+          <button type="button" class="player-speed" id="player-speed" aria-label="Kecepatan 1x" title="Kecepatan">1x</button>
+        </div>
+        <span class="player-extra-hint">ulang · kecepatan</span>
+      </div>
       <div class="player-list" id="player-list" role="listbox" aria-label="Playlist"></div>
       <label class="player-add" for="player-file">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 4h2v7h7v2h-7v7h-2v-7H4v-2h7z"/></svg>
         Tambah lagu kesukaanmu
       </label>
       <input class="player-file-input" id="player-file" type="file" accept="audio/*,.mp3,.m4a" multiple />
-      <p class="player-note">Tersimpan hanya di perangkat ini.</p>
+      <p class="player-note">Lagu upload hanya di perangkat ini. Bisa dihapus kapan saja.</p>
     </div>
   </div>
 
@@ -2362,6 +2471,8 @@
     const playerList = document.getElementById("player-list");
     const playerProgress = document.getElementById("player-progress");
     const playerFile = document.getElementById("player-file");
+    const playerRepeat = document.getElementById("player-repeat");
+    const playerSpeed = document.getElementById("player-speed");
 
     const PLAYLIST = [
       { src: "audio/1000x-Ghea.mp3", title: "1000x", artist: "Ghea Indrawari" },
@@ -2375,11 +2486,40 @@
     ];
 
     let trackIndex = 0;
+    let repeatMode = "off"; // off | one | all
+    const SPEED_STEPS = [0.75, 1, 1.25, 1.5];
+    let speedIndex = 1;
     audio.volume = 0.42;
+    audio.playbackRate = SPEED_STEPS[speedIndex];
 
     const FLOWER_EMOJIS = ["🌸", "🌺", "🌷", "💮", "🌹", "💐", "🪷"];
     const SONG_DB = "keyne-personal-playlist";
     const SONG_STORE = "songs";
+    const PLAYER_PREF_KEY = "keyne-player-prefs";
+
+    function loadPlayerPrefs() {
+      try {
+        const raw = localStorage.getItem(PLAYER_PREF_KEY);
+        if (!raw) return;
+        const prefs = JSON.parse(raw);
+        if (prefs.repeatMode === "off" || prefs.repeatMode === "one" || prefs.repeatMode === "all") {
+          repeatMode = prefs.repeatMode;
+        }
+        if (typeof prefs.speedIndex === "number" && prefs.speedIndex >= 0 && prefs.speedIndex < SPEED_STEPS.length) {
+          speedIndex = prefs.speedIndex;
+          audio.playbackRate = SPEED_STEPS[speedIndex];
+        }
+      } catch (_) {}
+    }
+
+    function savePlayerPrefs() {
+      try {
+        localStorage.setItem(
+          PLAYER_PREF_KEY,
+          JSON.stringify({ repeatMode: repeatMode, speedIndex: speedIndex })
+        );
+      } catch (_) {}
+    }
 
     function openSongDatabase() {
       return new Promise(function (resolve, reject) {
@@ -2409,6 +2549,23 @@
         return new Promise(function (resolve, reject) {
           const tx = db.transaction(SONG_STORE, "readwrite");
           tx.objectStore(SONG_STORE).put(song);
+          tx.oncomplete = function () {
+            db.close();
+            resolve();
+          };
+          tx.onerror = function () {
+            db.close();
+            reject(tx.error);
+          };
+        });
+      });
+    }
+
+    function deletePersonalSong(id) {
+      return openSongDatabase().then(function (db) {
+        return new Promise(function (resolve, reject) {
+          const tx = db.transaction(SONG_STORE, "readwrite");
+          tx.objectStore(SONG_STORE).delete(id);
           tx.oncomplete = function () {
             db.close();
             resolve();
@@ -2465,30 +2622,82 @@
       playerPlay.setAttribute("aria-label", playing ? "Jeda musik" : "Putar musik");
     }
 
+    function updateRepeatUI() {
+      const labels = {
+        off: "Ulangi: mati",
+        one: "Ulangi: satu lagu",
+        all: "Ulangi: semua",
+      };
+      playerRepeat.classList.toggle("is-on", repeatMode !== "off");
+      playerRepeat.setAttribute("aria-label", labels[repeatMode]);
+      playerRepeat.title =
+        repeatMode === "off" ? "Ulangi mati" : repeatMode === "one" ? "Ulangi lagu ini" : "Ulangi playlist";
+      audio.loop = repeatMode === "one";
+    }
+
+    function updateSpeedUI() {
+      const rate = SPEED_STEPS[speedIndex];
+      const label = rate === 1 ? "1x" : rate + "x";
+      playerSpeed.textContent = label;
+      playerSpeed.setAttribute("aria-label", "Kecepatan " + label);
+      audio.playbackRate = rate;
+    }
+
     function renderPlaylist() {
       playerList.innerHTML = "";
       PLAYLIST.forEach(function (track, index) {
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.className = "player-track" + (index === trackIndex ? " is-active" : "");
-        btn.setAttribute("role", "option");
-        btn.setAttribute("aria-selected", index === trackIndex ? "true" : "false");
-        btn.innerHTML =
-          '<span class="player-track-num">' +
-          String(index + 1).padStart(2, "0") +
-          "</span>" +
-          '<span class="player-track-text"><strong></strong><span></span></span>';
-        btn.querySelector("strong").textContent = track.title;
-        btn.querySelector(".player-track-text > span").textContent = track.artist;
-        btn.addEventListener("click", function () {
+        const row = document.createElement("div");
+        row.className = "player-track" + (index === trackIndex ? " is-active" : "");
+        row.setAttribute("role", "option");
+        row.setAttribute("aria-selected", index === trackIndex ? "true" : "false");
+        row.dataset.index = String(index);
+
+        const num = document.createElement("span");
+        num.className = "player-track-num";
+        num.textContent = String(index + 1).padStart(2, "0");
+
+        const text = document.createElement("button");
+        text.type = "button";
+        text.className = "player-track-text";
+        text.style.cssText =
+          "appearance:none;border:none;background:transparent;color:inherit;text-align:left;cursor:pointer;padding:0;min-width:0;font:inherit;";
+        text.innerHTML = "<strong></strong><span></span>";
+        text.querySelector("strong").textContent = track.title;
+        text.querySelector("span").textContent = track.artist;
+        text.addEventListener("click", function () {
           loadTrack(index, true);
         });
-        playerList.appendChild(btn);
+
+        row.appendChild(num);
+        row.appendChild(text);
+
+        if (track.customId) {
+          const del = document.createElement("button");
+          del.type = "button";
+          del.className = "player-delete";
+          del.setAttribute("aria-label", "Hapus " + track.title);
+          del.title = "Hapus lagu ini";
+          del.innerHTML =
+            '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 7h12v2H6zm2 3h8l-1 10H9L8 10zm3-6h2l1 2h3v2H7V6h3l1-2z"/></svg>';
+          del.addEventListener("click", function (event) {
+            event.stopPropagation();
+            removeCustomTrack(index);
+          });
+          row.appendChild(del);
+        } else {
+          const spacer = document.createElement("span");
+          spacer.setAttribute("aria-hidden", "true");
+          spacer.style.width = "1.55rem";
+          row.appendChild(spacer);
+        }
+
+        playerList.appendChild(row);
       });
     }
 
     function updateNowPlaying() {
       const track = PLAYLIST[trackIndex];
+      if (!track) return;
       playerTitle.textContent = track.title;
       playerArtist.textContent = track.artist;
       Array.prototype.forEach.call(playerList.children, function (el, index) {
@@ -2499,10 +2708,12 @@
     }
 
     function loadTrack(index, autoplay) {
-      trackIndex = (index + PLAYLIST.length) % PLAYLIST.length;
+      if (!PLAYLIST.length) return Promise.resolve();
+      trackIndex = ((index % PLAYLIST.length) + PLAYLIST.length) % PLAYLIST.length;
       const track = PLAYLIST[trackIndex];
       audio.src = track.src;
       audio.load();
+      audio.playbackRate = SPEED_STEPS[speedIndex];
       updateNowPlaying();
       playerProgress.style.width = "0%";
       if (autoplay) {
@@ -2530,7 +2741,18 @@
       setPlayingUI(false);
     }
 
-    function nextTrack(autoplay) {
+    function nextTrack(autoplay, fromEnded) {
+      if (!PLAYLIST.length) return Promise.resolve();
+      if (repeatMode === "one") {
+        audio.currentTime = 0;
+        return autoplay === false ? Promise.resolve() : playMusic().catch(function () {});
+      }
+      if (fromEnded && repeatMode === "off" && trackIndex >= PLAYLIST.length - 1) {
+        pauseMusic();
+        playerProgress.style.width = "0%";
+        audio.currentTime = 0;
+        return Promise.resolve();
+      }
       return loadTrack(trackIndex + 1, autoplay !== false);
     }
 
@@ -2542,6 +2764,49 @@
       return loadTrack(trackIndex - 1, true);
     }
 
+    function removeCustomTrack(index) {
+      const track = PLAYLIST[index];
+      if (!track || !track.customId) return;
+
+      const wasCurrent = index === trackIndex;
+      const wasPlaying = !audio.paused;
+      if (track.src && track.src.indexOf("blob:") === 0) {
+        try {
+          URL.revokeObjectURL(track.src);
+        } catch (_) {}
+      }
+
+      PLAYLIST.splice(index, 1);
+      deletePersonalSong(track.customId).catch(function () {});
+
+      if (!PLAYLIST.length) {
+        trackIndex = 0;
+        pauseMusic();
+        audio.removeAttribute("src");
+        playerTitle.textContent = "—";
+        playerArtist.textContent = "—";
+        playerProgress.style.width = "0%";
+        renderPlaylist();
+        return;
+      }
+
+      if (index < trackIndex) {
+        trackIndex -= 1;
+      } else if (wasCurrent) {
+        trackIndex = Math.min(index, PLAYLIST.length - 1);
+      }
+
+      renderPlaylist();
+      if (wasCurrent) {
+        loadTrack(trackIndex, wasPlaying);
+      } else {
+        updateNowPlaying();
+      }
+    }
+
+    loadPlayerPrefs();
+    updateRepeatUI();
+    updateSpeedUI();
     renderPlaylist();
     loadTrack(0, false);
     restorePersonalSongs().then(function () {
@@ -2603,7 +2868,7 @@
     });
 
     playerNext.addEventListener("click", function () {
-      nextTrack(true);
+      nextTrack(true, false);
     });
 
     playerPrev.addEventListener("click", function () {
@@ -2616,8 +2881,27 @@
       playerToggle.setAttribute("aria-label", open ? "Tutup playlist" : "Buka playlist");
     });
 
+    playerRepeat.addEventListener("click", function () {
+      if (repeatMode === "off") repeatMode = "one";
+      else if (repeatMode === "one") repeatMode = "all";
+      else repeatMode = "off";
+      updateRepeatUI();
+      savePlayerPrefs();
+    });
+
+    playerSpeed.addEventListener("click", function () {
+      speedIndex = (speedIndex + 1) % SPEED_STEPS.length;
+      updateSpeedUI();
+      savePlayerPrefs();
+    });
+
     audio.addEventListener("ended", function () {
-      nextTrack(true);
+      if (repeatMode === "one") {
+        audio.currentTime = 0;
+        playMusic().catch(function () {});
+        return;
+      }
+      nextTrack(true, true);
     });
 
     audio.addEventListener("timeupdate", function () {
@@ -2625,7 +2909,6 @@
       const pct = Math.min(100, (audio.currentTime / audio.duration) * 100);
       playerProgress.style.width = pct.toFixed(2) + "%";
     });
-
     function spawnBurst() {
       const count = window.matchMedia("(max-width: 640px)").matches ? 36 : 52;
       for (let i = 0; i < count; i++) {
