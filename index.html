@@ -2476,6 +2476,8 @@
 
     const PLAYLIST = [
       { src: "audio/1000x-Ghea.mp3", title: "1000x", artist: "Ghea Indrawari" },
+      { src: "audio/TakkanTerganti-Marcell.mp3", title: "Takkan Terganti", artist: "Marcell" },
+      { src: "audio/MerryChristmas-AlexCrichton.mp3", title: "Merry Christmas, I Miss You", artist: "Alex Crichton" },
       { src: "audio/BrunoMars.mp3", title: "When I Was Your Man", artist: "Bruno Mars" },
       { src: "audio/easy-mac.mp3", title: "Easy", artist: "Mac Ayres" },
       { src: "audio/Glenn-MataKeHati.mp3", title: "Mata Ke Hati", artist: "Glenn Fredly" },
@@ -2659,8 +2661,6 @@
         const text = document.createElement("button");
         text.type = "button";
         text.className = "player-track-text";
-        text.style.cssText =
-          "appearance:none;border:none;background:transparent;color:inherit;text-align:left;cursor:pointer;padding:0;min-width:0;font:inherit;";
         text.innerHTML = "<strong></strong><span></span>";
         text.querySelector("strong").textContent = track.title;
         text.querySelector("span").textContent = track.artist;
